@@ -26,5 +26,9 @@ def login():
 def land():
     return render_template('index.html')
 
+@app.route('/equipment')
+def equipment():
+    return render_template('equipment.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
