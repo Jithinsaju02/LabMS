@@ -22,5 +22,9 @@ def login():
             return "Invalid credentials. Please try again.", 401
     return render_template('login.html')
 
+@app.route('/land')
+def land():
+    return render_template('index.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
