@@ -6,4 +6,8 @@ app = Flask(__name__)
 def hello():
     return "Hello World"
 
+@app.route('/land')
+def land():
+    return render_template('home.html')
+
 app.run()
