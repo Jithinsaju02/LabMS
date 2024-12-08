@@ -38,19 +38,29 @@
         th {
             background-color: #f2f2f2;
         }
-        .add-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #5176f3;
-            color: white;
-            text-decoration: none;
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 14px;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
-        .add-btn:hover {
-            background-color: #5176f3;
+        .book-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .book-btn:hover {
+            background-color: #0a601e;
+        }
+        .return-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .return-btn:hover {
+            background-color: #870815;
+        }
+        a {
+            text-decoration: none;
         }
     </style>
 </head>
@@ -67,36 +77,27 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                {% for equipment in equipment_list %}
                 <tr>
-                    <td>1</td>
-                    <td>Lenovo</td>
-                    <td>Laptop 10</td>
-                    <td>Available</td>
+                    <td>{{ equipment.id }}</td>
+                    <td>{{ equipment.name }}</td>
+                    <td>{{ equipment.type }}</td>
+                    <td>{{ equipment.status }}</td>
+                    <td>
+                        {% if equipment.status == "Available" %}
+                        <a href="{{ url_for('book_equipment', equipment_id=equipment.id) }}" class="action-btn book-btn">Book</a>
+                        {% elif equipment.status == "In Use" %}
+                        <a href="{{ url_for('return_equipment', equipment_id=equipment.id) }}" class="action-btn return-btn">Return</a>
+                        {% endif %}
+                    </td>
                 </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Lenovo</td>
-                    <td>Laptop 11</td>
-                    <td>Available</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Lenovo</td>
-                    <td>Laptop 12</td>
-                    <td>Available</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Lenovo</td>
-                    <td>Laptop 13</td>
-                    <td>In Use</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
-        <a href="/add" class="add-btn">Add New Equipment</a>
     </div>
 </body>
 </html>
