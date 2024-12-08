@@ -83,5 +83,9 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/equipment')
+def equipment():
+    return render_template('equipment.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
