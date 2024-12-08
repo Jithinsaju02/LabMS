@@ -87,13 +87,8 @@ def logout():
 
 
 
-# Mock equipment data
-equipment_list = [
-    {"id": 1, "name": "Lenovo Laptop 10", "type": "Laptop", "status": "Available"},
-    {"id": 2, "name": "Lenovo Laptop 11", "type": "Laptop", "status": "Available"},
-    {"id": 3, "name": "Lenovo Laptop 12", "type": "Laptop", "status": "Available"},
-    {"id": 4, "name": "Lenovo Laptop 13", "type": "Laptop", "status": "Available"},
-]
+
+
 
 @app.route('/equipment')
 def equipment():
