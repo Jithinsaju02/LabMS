@@ -117,14 +117,18 @@
             <div class="divider"></div>
             <a href="bookequipment.html">Book Equipments</a>
         </div>
-        <a class="logout-btn" href="logout.html">Logout</a>
+        {% if current_user.is_authenticated %}
+        <a class="logout-btn" href="{{url_for('logout')}}">Logout</a>
+        {% endif %}
     </nav>
 
     <!-- Landing Page Content -->
     <div class="content">
         <h1>Welcome to the Lab Management System</h1>
         <p>Manage your lab bookings and equipment easily with our system.</p>
-        <a href="booklab.html">Start Booking</a>
+
+        
+        
     </div>
 
 </body>
