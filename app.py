@@ -18,7 +18,7 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(60), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
 
-class Labs(db.Model):
+class Labsd(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     labname = db.Column(db.String(20), unique=True, nullable=False)
@@ -77,7 +77,7 @@ def home():
 def land():
     return render_template('index.html')
 
-@app.route('/booklab')
+@app.route('/booklab',methods=['GET','POST'])
 @login_required
 def booklab():
     if request.method == 'POST':
@@ -86,20 +86,22 @@ def booklab():
         date = request.form['date']
         from_time = request.form['from_time']
         to_time = request.form['to_time']
-        labs = Labs.query.filter_by(username=username).first()
-        conflicting_booking = Labs.query.filter_by(labname=lab, date=date).filter(
-            (Labs.from_time <= from_time) & (Labs.to_time > from_time) |
-            (Labs.from_time < to_time) & (Labs.to_time >= to_time) |
-            (Labs.from_time >= from_time) & (Labs.to_time <= to_time)
+        purpose = request.form['purpose']
+        labs = Labsd.query.filter_by(username=username).first()
+        conflicting_booking = Labsd.query.filter_by(labname=lab, date=date).filter(
+            (Labsd.from_time <= from_time) & (Labsd.to_time > from_time) |
+            (Labsd.from_time < to_time) & (Labsd.to_time >= to_time) |
+            (Labsd.from_time >= from_time) & (Labsd.to_time <= to_time)
         ).first()
         if conflicting_booking:
             flash("Lab is already booked for the given time slot")
             return redirect(url_for('booklab'))
-        new_user = Users(username=username, lab=lab, date=date, from_time=from_time,  to_time= to_time)
+        new_user = Labsd(username=username, labname=lab, date=date, from_time=from_time,  to_time= to_time, purpose=purpose
+                         )
         db.session.add(new_user)
         db.session.commit()
-        flash("User created successfully")
-        return redirect(url_for('login'))
+        flash("lab booked successfully")
+        return redirect(url_for('land'))
     return render_template('booklab.html')
 
 @app.route('/bookequipment/<int:equipment_id>', methods=['GET', 'POST'])
