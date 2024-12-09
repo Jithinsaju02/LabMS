@@ -87,7 +87,7 @@
 
     <div class="container">
         <h1>Book a Lab</h1>
-        <form action="submit_booking.html" method="POST">
+    <form action="{{url_for('booklab')}}" method="POST">
             <label for="username">Your Name</label>
             <input type="text" id="username" name="username" placeholder="Enter your name" required>
             
@@ -117,7 +117,7 @@
             <button type="submit">Submit Booking</button>
         </form>
 
-        <a class="back-link" href="index.html">Back to Home</a>
+        <a class="back-link" href="{{url_for('land')}}">Back to Home</a>
     </div>
     
 </body>
