@@ -69,11 +69,13 @@
             <h1>Book {{ equipment.name }}</h1>
         </header>
         <form method="POST">
+            <label for="ename">Equipment Name:</label>
+            <input type="text" id="ename" name="ename" value="{{equipment.equipmentname}}" required>
             <label for="name">Your Name:</label>
             <input type="text" id="name" name="name" required>
             
-            <label for="contact">Your Contact:</label>
-            <input type="text" id="contact" name="contact" required>
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
             
             <label for="take_time">Taking Time:</label>
             <input type="time" id="take_time" name="take_time" required>

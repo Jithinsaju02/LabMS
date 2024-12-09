@@ -59,6 +59,21 @@
         .return-btn:hover {
             background-color: #870815;
         }
+        .back-btn {
+            background-color: #ff0000d5;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 20px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .back-btn:hover {
+            background-color: #0056b3;
+        }
         a {
             text-decoration: none;
         }
@@ -66,16 +81,19 @@
 </head>
 <body>
     <header>
+
         <h1>Lab Equipment Inventory</h1>
     </header>
     <div class="container">
+        <div class="button-container">
+            <a href="{{ url_for('land') }}" class="back-btn">Back to Home</a>
+        </div>
         <h2>Equipment List</h2>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Type</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -84,12 +102,11 @@
                 {% for equipment in equipment_list %}
                 <tr>
                     <td>{{ equipment.id }}</td>
-                    <td>{{ equipment.name }}</td>
-                    <td>{{ equipment.type }}</td>
+                    <td>{{ equipment.equipmentname }}</td>
                     <td>{{ equipment.status }}</td>
                     <td>
                         {% if equipment.status == "Available" %}
-                        <a href="{{ url_for('book_equipment', equipment_id=equipment.id) }}" class="action-btn book-btn">Book</a>
+                        <a href="{{ url_for('bookequipment', equipment_id=equipment.id) }}" class="action-btn book-btn">Book</a>
                         {% elif equipment.status == "In Use" %}
                         <a href="{{ url_for('return_equipment', equipment_id=equipment.id) }}" class="action-btn return-btn">Return</a>
                         {% endif %}

@@ -113,9 +113,9 @@
     <nav class="navbar">
         <div class="navbar-left">Lab Management System</div>
         <div class="navbar-middle">
-            <a href="booklab.html">Book Lab</a>
+            <a href="{{url_for('booklab')}}">Book Lab</a>
             <div class="divider"></div>
-            <a href="bookequipment.html">Book Equipments</a>
+            <a href="{{url_for('equipment')}}">Book Equipments</a>
         </div>
         {% if current_user.is_authenticated %}
         <a class="logout-btn" href="{{url_for('logout')}}">Logout</a>

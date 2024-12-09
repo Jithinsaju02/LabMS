@@ -18,10 +18,47 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(60), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
 
+class Labs(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    labname = db.Column(db.String(20), unique=True, nullable=False)
+    date = db.Column(db.String(20), nullable=False)
+    from_time = db.Column(db.String(20), nullable=False)
+    to_time = db.Column(db.String(20), nullable=False)
+    purpose = db.Column(db.String(20), nullable=False)
+
+class Equipments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    equipmentname = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(100))
+    date = db.Column(db.String(20))
+    take_time = db.Column(db.String(20))
+    return_time = db.Column(db.String(20))
+    status = db.Column(db.String(20))
+    
+
 # Push the application context to make the current app active
 # and create all database tables defined by the SQLAlchemy models
 app.app_context().push()
 db.create_all()
+
+
+equipment_list = [
+    {"id": 1, "equipmentname": "Projector", "status": "Available"},
+    {"id": 2, "equipmentname": "Laptop 1", "status": "Available"},
+    {"id": 3, "equipmentname": "Laptop 2", "status": "Available"},
+    {"id": 4, "equipmentname": "Extention", "status": "Available"}
+]
+
+if not Equipments.query.first():
+    for equipment in equipment_list:
+        new_equipment = Equipments(
+            id=equipment["id"],
+            equipmentname=equipment["equipmentname"],
+            status=equipment["status"]
+        )
+        db.session.add(new_equipment)
+    db.session.commit()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -43,7 +80,62 @@ def land():
 @app.route('/booklab')
 @login_required
 def booklab():
+    if request.method == 'POST':
+        username = request.form['username']
+        lab = request.form['lab']
+        date = request.form['date']
+        from_time = request.form['from_time']
+        to_time = request.form['to_time']
+        labs = Labs.query.filter_by(username=username).first()
+        conflicting_booking = Labs.query.filter_by(labname=lab, date=date).filter(
+            (Labs.from_time <= from_time) & (Labs.to_time > from_time) |
+            (Labs.from_time < to_time) & (Labs.to_time >= to_time) |
+            (Labs.from_time >= from_time) & (Labs.to_time <= to_time)
+        ).first()
+        if conflicting_booking:
+            flash("Lab is already booked for the given time slot")
+            return redirect(url_for('booklab'))
+        new_user = Users(username=username, lab=lab, date=date, from_time=from_time,  to_time= to_time)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("User created successfully")
+        return redirect(url_for('login'))
     return render_template('booklab.html')
+
+@app.route('/bookequipment/<int:equipment_id>', methods=['GET', 'POST'])
+@login_required
+def bookequipment(equipment_id):
+    # Fetch equipment from the database
+    equipment = Equipments.query.get_or_404(equipment_id)
+    
+    if request.method == 'POST':
+        # Handle form submission
+        equipment.booked_by = request.form['name']
+        equipment.date = request.form['date']
+        equipment.take_time = request.form['take_time']
+        equipment.return_time = request.form['return_time']
+        equipment.status = "In Use"
+        db.session.commit()
+        flash(f"Equipment '{equipment.equipmentname}' booked successfully!")
+        return redirect(url_for('equipment'))
+
+    return render_template('book_equipment.html', equipment=equipment)
+
+@app.route('/return/<int:equipment_id>', methods=['GET', 'POST'])
+def return_equipment(equipment_id):
+    # Find the equipment to return
+    equipment = Equipments.query.get(equipment_id)
+    if not equipment:
+        return "Equipment not found", 404
+
+    # Change the status back to available
+    if equipment.status == "In Use":
+        equipment.status = "Available"
+        db.session.commit()
+        # Optionally, you can log or store the return details here
+        # print(f"Equipment '{equipment['name']}' is now available.")
+    
+    return redirect(url_for('equipment'))
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -90,44 +182,14 @@ def logout():
 
 
 
+
 @app.route('/equipment')
+@login_required
 def equipment():
+    equipment_list = Equipments.query.all()
     return render_template('equipment.html', equipment_list=equipment_list)
 
-@app.route('/book/<int:equipment_id>', methods=['GET', 'POST'])
-def book_equipment(equipment_id):
-    # Find the equipment to book
-    equipment = next((e for e in equipment_list if e["id"] == equipment_id), None)
-    if not equipment:
-        return "Equipment not found", 404
 
-    if request.method == 'POST':
-        # Handle form submission and update status
-        person_name = request.form['name']
-        person_contact = request.form['contact']
-        take_time = request.form['take_time']
-        return_time = request.form['return_time']
-        equipment["status"] = "In Use"
-        # Optionally, you can log or store the booking details here
-        print(f"Equipment '{equipment['name']}' booked by {person_name} (Contact: {person_contact}) from {take_time} to {return_time}")
-        return redirect(url_for('equipment'))
-
-    return render_template('book_equipment.html', equipment=equipment)
-
-@app.route('/return/<int:equipment_id>', methods=['GET', 'POST'])
-def return_equipment(equipment_id):
-    # Find the equipment to return
-    equipment = next((e for e in equipment_list if e["id"] == equipment_id), None)
-    if not equipment:
-        return "Equipment not found", 404
-
-    # Change the status back to available
-    if equipment["status"] == "In Use":
-        equipment["status"] = "Available"
-        # Optionally, you can log or store the return details here
-        print(f"Equipment '{equipment['name']}' is now available.")
-    
-    return redirect(url_for('equipment'))
 
 
 if __name__ == '__main__':
